@@ -1,0 +1,25 @@
+name: Deploy To VPS
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy branch
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            if [ "${{ github.ref_name }}" = "staging" ]; then
+              /opt/hello-world-site/scripts/deploy-staging.sh
+            else
+              /opt/hello-world-site/scripts/deploy-production.sh
+            fi
